@@ -11,9 +11,9 @@ output:
 
 ## Project thoughts
 
-I am interested in exploring data related to youth refugees.
+I am interested in exploring data related to refugees and immigrants.
 
-What impact does refugee education have on their employment opportunities in host countries?
+Research question?: What impact does refugee education have on their employment opportunities in host countries?
 
 Hypothesis: Refugees with higher levels of education are more likely to find employment in host nations than those with lower levels of education.
 
