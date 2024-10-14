@@ -12,3 +12,17 @@ output:
 ## Project thoughts
 
 I am interested in exploring data related to youth refugees.
+
+What impact does refugee education have on their employment opportunities in host countries?
+
+Hypothesis: Refugees with higher levels of education are more likely to find employment in host nations than those with lower levels of education.
+
+Explanatory variables of interests: 
+Education levels would be divided into four categories: no formal education, elementary education, secondary education, and postsecondary education. This would assess the refugees' access to education prior to displacement.
+
+Outcome variable of interests:
+Employment statuses would be divided into employed and unemployed. This could potentially be divided into various types of jobs. 
+
+Support/Against Hypothesis:
+If higher education levels are associated with a higher probability of employment, this would support my hypothesis. For example, college education is more likely to lead to employment than primary education. The same might be argued if there is no association between education and employment position, which contradicts my hypothesis. 
+
