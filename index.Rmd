@@ -26,3 +26,15 @@ Employment statuses would be divided into employed and unemployed. This could po
 Support/Against Hypothesis:
 If higher education levels are associated with a higher probability of employment, this would support my hypothesis. For example, college education is more likely to lead to employment than primary education. The same might be argued if there is no association between education and employment position, which contradicts my hypothesis. 
 
+```{r}
+library(dplyr)
+library(tidyr)
+
+getwd()
+setwd("/Users/madalynn/ps270-final-project")
+refugee <- read.csv("data_3countries_refugees_public.csv")
+
+
+
+```
+
