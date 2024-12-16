@@ -1,5 +1,5 @@
 ---
-title: "PS270 Final Project: Refugee Level of Education and Employment Status"
+title: "PS270 Final Project: Refugee Education and Employment Status"
 author: "Madalynn Vang"
 description: "My final project will focus on refugee's level of education and their employment status' in Uganda, Kenya, and Ethiopia."
 output:
