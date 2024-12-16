@@ -30,7 +30,7 @@ getwd()
 setwd("/Users/madalynn/ps270-final-project")
 
 refugee <- read.csv("data/data_3countries_refugees_public.csv")
-refugee
+
 ```
 
 
