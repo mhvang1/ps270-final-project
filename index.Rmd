@@ -94,6 +94,7 @@ In secondary education, the employed (1172) are fewer than the unemployed (2306)
 This data shows that those with no formal education or elementary education have a higher proportion of unemployment as well as the highest employment. There is a considerable difference between those who are employed and those who are not. Additionally, the trend reverses at the post-secondary level, where there are slightly more employed than unemployed individuals. The data suggests that while the level of education increases, the number of those who are unemployed remains high.
 
 Based on the regression model below, with an odds ratio of 0.35, the intercept represents the employment odds for those without a formal education. This suggests that there is little chance of employment. Those with elementary education have a higher odds ratio of 1.37 than those without any formal education, indicating a moderate increase in job chance. When compared to no formal education, the odds ratio increases to 1.44 with secondary education, indicating even more possibilities for employment. With an odds ratio of 3.74, individuals with post-secondary education have a significantly higher chance of finding work than those without formal education. These findings show that there is a positive relationship between refugees' employment and their level of education.
+
 ```{r}
 library(modelsummary)
 library(tidyverse)
