@@ -20,7 +20,7 @@ The data for this report comes from the Refugee Economies Dataset, collected bet
 
 Employment status (either employed or unemployed) is the dependent variable. Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education which will be classified as no formal education (0 years of education), elementary(1-6 years), secondary(7-12), or post-secondary(more than 12). This variable is determined from the reported years of education.
 
-```{r}
+```{r, echo = FALSE}
 library(dplyr)
 library(tidyverse)
 library(tidyr)
@@ -34,7 +34,7 @@ refugee <- read.csv("data/data_3countries_refugees_public.csv")
 ```
 
 
-```{r}
+```{r,  echo = FALSE}
 ## Assign Variables and create a boxplot that shows employment status for 4 different education levels.
 
 library(dplyr)
@@ -95,7 +95,7 @@ This data shows that those with no formal education or elementary education have
 
 Based on the regression model below, with an odds ratio of 0.35, the intercept represents the employment odds for those without a formal education. This suggests that there is little chance of employment. Those with elementary education have a higher odds ratio of 1.37 than those without any formal education, indicating a moderate increase in job chance. When compared to no formal education, the odds ratio increases to 1.44 with secondary education, indicating even more possibilities for employment. With an odds ratio of 3.74, individuals with post-secondary education have a significantly higher chance of finding work than those without formal education. These findings show that there is a positive relationship between refugees' employment and their level of education.
 
-```{r}
+```{r,  echo = FALSE}
 library(modelsummary)
 library(tidyverse)
 library(dplyr)
@@ -112,8 +112,8 @@ exp_coef_df$exp_coef <- exp_coef
 kable(exp_coef_df, col.names = c("Term", "Estimate", "Std. Error", "z value", "Pr(>|z|)", "Odds Ratio"))
 
 ```
-## Another example:
-```{r}
+
+```{r,  echo = FALSE}
 library(ggplot2)
 library(sf)
 library(dplyr)
