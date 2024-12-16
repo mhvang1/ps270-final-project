@@ -20,7 +20,7 @@ The data for this report comes from the Refugee Economies Dataset, collected bet
 
 Employment status (either employed or unemployed) is the dependent variable. Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education which will be classified as no formal education (0 years of education), elementary(1-6 years), secondary(7-12), or post-secondary(more than 12). This variable is determined from the reported years of education.
 
-```{r, echo=FALSE, message=FALSE}
+```{r, echo = FALSE, results="hide"}
 library(dplyr)
 library(tidyverse)
 library(tidyr)
