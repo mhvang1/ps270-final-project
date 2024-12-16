@@ -102,10 +102,6 @@ library(dplyr)
 library(knitr)
 library(broom)
 
-model <- glm(job ~ education_level, data = refugee, family = binomial)
-model_summary <- tidy(model)
-kable(model_summary, caption = "Logistic Regression Summary: Job vs. Education Level")
-
 exp_coef <- exp(coef(model))
 exp_coef_df <- tidy(model)
 exp_coef_df$exp_coef <- exp_coef
@@ -131,8 +127,7 @@ refugee_map <- refugee |>
       education_years3 <= 0 ~ "No Formal Education",
       education_years3 <= 6 ~ "Elementary",
       education_years3 <= 12 ~ "Secondary",
-      education_years3 > 12 ~ "Postsecondary"
-    ),
+      education_years3 > 12 ~ "Postsecondary"),
     employment_status = ifelse(job == "Yes", "Employed", "Unemployed"))
 
 location <- refugee_map |>
