@@ -7,24 +7,18 @@ output:
     self_contained: false
 ---
 
-hi
 
-## Project thoughts
+## Introduction:
 
-Introduction:
 Many people believe that education is essential to refugees' effective assimilation into host countries. However, systemic barriers and different levels of education among refugees often influence their access to employment opportunities. This report attempts to addresses the question: "What impact does refugee education have on their employment opportunities in host countries?"
 
 The hypothesis is that refugees with higher education levels are more likely to find employment than those with lower education levels. Understanding this relationship is important for policymakers and organizations aiming to design effective education and employment programs. Evidence from this analysis could provide insights into how investments in refugee education contribute to economic integration and independence.
 
 
-Data Section: 
+## Data Section: 
 The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, educational, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
 
-The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, educational, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
-
-Employment status (either employed or unemployed) is the dependent variable.
-Whether refugees are now working for a living is captured by this variable.
-The independent variable is the degree of education (classified as elementary, secondary, post-secondary, or no formal education).This variable is determined from the reported years of education.
+Employment status (either employed or unemployed) is the dependent variable.Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education (classified as elementary, secondary, post-secondary, or no formal education). This variable is determined from the reported years of education.
 
 ```{r}
 library(dplyr)
@@ -32,11 +26,19 @@ library(tidyr)
 library(ggplot2)
 set.seed(02138)
 
+# Load the data and assign it to `refugee`.
 getwd()
 setwd("/Users/madalynn/ps270-final-project")
 
 refugee <- read.csv("data/data_3countries_refugees_public.csv")
 refugee
+```
+```{r}
+## Assign Variables and create a boxplot that shows employment status for 4 different education levels.
+
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 
 refugee <- refugee |>
   select(education_years3, job) |>
@@ -85,25 +87,78 @@ refugee <- refugee |>
     employment_status = ifelse(job == "Yes", 1, 0),
     education_level = factor(
       education_level,
-      levels = c("No Formal Education", "Elementary", "Secondary", "Postsecondary")))
+      levels = c("No Formal Education", "Elementary", "Secondary", "Postsecondary"))
 
 model <- glm(
-  employment_status ~ education_level,
+  job ~ education_years3,
   data = refugee,
   family = binomial(link = "logit"))
+model
 
-modelsummary::modelsummary(
-  refugee,
-  statistic = c("s.e. = {std.error}", "p = {p.value}"),
-  gof_map = c("nobs")
-)
+exp_coef <- exp(coef(model))
+exp_coef
 
 ```
 
 
 ```{r}
+library(ggplot2)
+library(sf)
+library(dplyr)
+library(rnaturalearth)
+library(rnaturalearthdata)
 
+refugee <- read.csv("data/data_3countries_refugees_public.csv")
 
+# Filter relevant columns and clean the data
+refugee_map <- refugee |>
+  select(surveylocation, education_years3, job) |>
+  drop_na() |>
+  mutate(
+    education_level = case_when(
+      education_years3 <= 0 ~ "No Formal Education",
+      education_years3 <= 6 ~ "Elementary",
+      education_years3 <= 12 ~ "Secondary",
+      education_years3 > 12 ~ "Postsecondary"
+    ),
+    employment_status = ifelse(job == "Yes", "Employed", "Unemployed")
+  )
+location <- refugee_map |>
+  group_by(surveylocation, education_level) |>
+  summarise(employed = sum(employment_status == "Employed"),
+            unemployed = sum(employment_status == "Unemployed"),
+            .groups = "drop") |>
+  mutate(total = employed + unemployed,
+         employment_rate = employed / total)
+
+# Simplify location names for mapping
+location <- location |>
+  mutate(surveylocation = case_when(
+    surveylocation == "Addis" ~ "Ethiopia",
+    surveylocation == "Melkadida" ~ "Ethiopia",
+    surveylocation == "Nakivale" ~ "Uganda",
+    surveylocation == "Kampala" ~ "Uganda",
+    surveylocation == "Nairobi" ~ "Kenya",
+    surveylocation == "Kakuma" ~ "Kenya",
+    TRUE ~ surveylocation))
+
+countries <- ne_countries(scale = "medium", returnclass = "sf") |>
+  filter(admin %in% c("Ethiopia", "Uganda", "Kenya"))
+
+# Merge country spatial data with refugee employment data
+refugee_map <- countries |>
+  left_join(location, by = c("admin" = "surveylocation"))
+ggplot(data = refugee_map) +
+  geom_sf(aes(fill = employment_rate), color = "black") +
+  scale_fill_gradient2(
+    low = "white", 
+    mid = "pink",
+    high = "orange",
+    name = "Employment Rate") +
+  labs(
+    title = "Refugee Employment Rates by Country",
+    caption = "Source: Refugee Economies Dataset (2016-2021)") +
+  theme_minimal()
 
 ```
 
