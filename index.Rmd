@@ -81,7 +81,7 @@ refugee_graph <- ggplot(refugee, aes(x = education_level, fill = factor(employme
     vjust = -0.5, size = 3) +
   theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 12),
     plot.subtitle = element_text(hjust = 0.5, size = 12),
     axis.text.x = element_text(angle = 45, hjust = 1))
 print(refugee_graph)
@@ -112,7 +112,7 @@ exp_coef_df$exp_coef <- exp_coef
 kable(exp_coef_df, col.names = c("Term", "Estimate", "Std. Error", "z value", "Pr(>|z|)", "Odds Ratio"))
 
 ```
-
+## Another example:
 ```{r}
 library(ggplot2)
 library(sf)
