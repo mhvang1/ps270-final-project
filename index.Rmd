@@ -111,7 +111,7 @@ kable(exp_coef_df, col.names = c("Term", "Estimate", "Std. Error", "z value", "P
 
 ```
 
-```{r,  echo = FALSE}
+```{r,  echo=FALSE}
 library(ggplot2)
 library(sf)
 library(dplyr)
