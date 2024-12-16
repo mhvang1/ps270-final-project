@@ -102,6 +102,9 @@ library(dplyr)
 library(knitr)
 library(broom)
 
+model <- glm(job ~ education_level, data = refugee, family = binomial)
+model_summary <- tidy(model)
+
 exp_coef <- exp(coef(model))
 exp_coef_df <- tidy(model)
 exp_coef_df$exp_coef <- exp_coef
@@ -155,6 +158,7 @@ countries <- ne_countries(scale = "medium", returnclass = "sf") |>
 # Merge country data with refugee employment data
 refugee_map <- countries |>
   left_join(location, by = c("admin" = "surveylocation"))
+
 ggplot(data = refugee_map) +
   geom_sf(aes(fill = employment_rate), color = "black") +
   scale_fill_gradient2(
@@ -166,7 +170,6 @@ ggplot(data = refugee_map) +
     title = "Refugee Employment Rates by Country (Uganda, Kenya, and Ethiopia)",
     caption = "Source: Refugee Economies Dataset (2016-2021)") +
   theme_minimal()
-print(refugee_map)
 ```
 This map shows the employment rates of individuals based on their country (Uganda, Kenya, and Ethiopia). Kenya has the highest employment rate compared to Uganda and Ethiopia. This data suggests that geography could be a variable that could affect levels of education and employment. 
 
