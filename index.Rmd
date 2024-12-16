@@ -1,7 +1,7 @@
 ---
-title: "PS270 Final Project"
+title: "PS270 Final Project: Refugee Level of Education and Employment Status"
 author: "Madalynn Vang"
-description: "My final project"
+description: "My final project will focus on refugee's level of education and their employment status' in Uganda, Kenya, and Ethiopia."
 output:
   distill::distill_article:
     self_contained: false
@@ -20,17 +20,16 @@ The data for this report comes from the Refugee Economies Dataset, collected bet
 
 Employment status (either employed or unemployed) is the dependent variable. Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education which will be classified as no formal education (0 years of education), elementary(1-6 years), secondary(7-12), or post-secondary(more than 12). This variable is determined from the reported years of education.
 
-```{r, echo = FALSE}
+```{r, echo=FALSE, message=FALSE}
 library(dplyr)
 library(tidyverse)
 library(tidyr)
 
 # Load the data and assign it to `refugee`.
 getwd()
-setwd("/Users/madalynn/ps270-final-project")
+setwd("/Users/madalynn/ps270-final-project/")
 
 refugee <- read.csv("data/data_3countries_refugees_public.csv")
-
 ```
 
 
@@ -167,7 +166,7 @@ ggplot(data = refugee_map) +
     high = "orange",
     name = "Employment Rate") +
   labs(
-    title = "Refugee Employment Rates by Country (Uganda, Kenya, and Ethiopia)",
+    title = "Refugee Employment Rates in Uganda, Kenya, and Ethiopia",
     caption = "Source: Refugee Economies Dataset (2016-2021)") +
   theme_minimal()
 ```
@@ -176,4 +175,6 @@ This map shows the employment rates of individuals based on their country (Ugand
 ## Conclusion
 
 In conclusion, the analysis suggests that higher levels of education are associated with increased employment rates among refugees. It supports the hypothesis that education plays a role in employment outcomes. Among the nations examined, Kenya has the highest percentage of employment for refugees; this could teach Ethiopia and Uganda how to better integrate refugees. However, the analysis is limited by missing data, particularly regarding unreported levels of education and employment statuses, and potential confounding variables, such as differences in host country policies, job opportunities, or refugee demographics(urban vs rural). Furthermore, bias could be introduced by using self-reported data alone. More thorough data collection, such as local economic situations, could enhance future research. More detailed, location-specific research to better understand regional variations within nations may also be made possible by increased resources.
+
+Source: Refugee Economies Programme. (2016–2021). Refugee Economies Dataset. Refugee Economies Programme, University of Oxford. Retrieved from https://www.refugee-economies.org/dataset
 
