@@ -16,15 +16,14 @@ The hypothesis is that refugees with higher education levels are more likely to 
 
 
 ## Data Section: 
-The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, educational, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
+The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, education, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
 
-Employment status (either employed or unemployed) is the dependent variable.Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education (classified as elementary, secondary, post-secondary, or no formal education). This variable is determined from the reported years of education.
+Employment status (either employed or unemployed) is the dependent variable. Whether refugees are now working for a living is captured by this variable. The independent variable is the degree of education which will be classified as no formal education (0 years of education), elementary(1-6 years), secondary(7-12), or post-secondary(more than 12). This variable is determined from the reported years of education.
 
 ```{r}
 library(dplyr)
+library(tidyverse)
 library(tidyr)
-library(ggplot2)
-set.seed(02138)
 
 # Load the data and assign it to `refugee`.
 getwd()
@@ -33,6 +32,8 @@ setwd("/Users/madalynn/ps270-final-project")
 refugee <- read.csv("data/data_3countries_refugees_public.csv")
 refugee
 ```
+
+
 ```{r}
 ## Assign Variables and create a boxplot that shows employment status for 4 different education levels.
 
@@ -56,50 +57,60 @@ refugee <- refugee |>
 
 refugee$job <- ifelse(refugee$job == "Yes", 1, 0)
 
-ggplot(refugee, aes(x = education_level, fill = employment_status)) +
-  geom_bar(position = "dodge", color = "black") + scale_fill_manual("Legend", values = c("Employed" = "pink", "Unemployed" = "yellow")) +
+refugee$education_level <- factor(
+  refugee$education_level,
+  levels = c("No Formal Education", "Elementary", "Secondary", "Postsecondary"))
+
+ggplot(refugee, aes(x = education_level, fill = factor(employment_status))) +
+  geom_bar(
+    position = "dodge", 
+    color = "black") + 
+  scale_fill_manual("Employment Status",
+      values = c("Employed" = "pink",
+                 "Unemployed" = "yellow")) +
   labs(
     title = "Relationship Between Education Level and Employment Status",
-    subtitle = "Refugee Economies Dataset (2016-2021)",
+    subtitle = "Source: Refugee Economies Dataset (2016-2021)",
     x = "Education Level",
     y = "Number of Refugees",
-    fill = "Employment Status"
-  ) +
-  geom_text(stat = "count", aes(label = after_stat(count)), 
-            position = position_dodge(width = 0.9), 
-            vjust = -0.5, size = 3) +
-  theme_minimal(base_size = 14) +
+    fill = "Employment Status") +
+  geom_text(
+    stat = "count", 
+    aes(label = after_stat(count)), 
+    position = position_dodge(width = 0.9),
+    vjust = -0.5, size = 3) +
+  theme_minimal() +
   theme(
-    plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 14),
     plot.subtitle = element_text(hjust = 0.5, size = 12),
-    axis.text.x = element_text(angle = 45, hjust = 1)
-  )
+    axis.text.x = element_text(angle = 45, hjust = 1))
 
 ```
+## Results
+Based on the bar plot, most refugees that have no formal education are unemployed (2452) compared to employed (865). In elementary education, a smaller number are employed (423) versus unemployed (873).
+In secondary education, the employed (1172) are fewer than the unemployed (2306), but the gap is narrower. In post-secondary education, there is a smaller total population, with more employed (334) compared to unemployed (253), showing the reverse trend compared to lower education levels. 
 
+This data shows that those with no formal education or elementary education have a higher proportion of unemployment as well as the highest employment. There is a considerable difference between those who are employed and those who are not. Additionally, the trend reverses at the post-secondary level, where there are slightly more employed than unemployed individuals. The data suggests that while the level of education increases, the number of those who are unemployed remains high.
+
+Based on the regression model below, with an odds ratio of 0.35, the intercept represents the employment odds for those without a formal education. This suggests that there is little chance of employment. Those with elementary education have a higher odds ratio of 1.37 than those without any formal education, indicating a moderate increase in job chance. When compared to no formal education, the odds ratio increases to 1.44 with secondary education, indicating even more possibilities for employment. With an odds ratio of 3.74, individuals with post-secondary education have a significantly higher chance of finding work than those without formal education. These findings show that there is a positive relationship between refugees' employment and their level of education.
 ```{r}
 library(modelsummary)
+library(tidyverse)
 library(dplyr)
+library(knitr)
+library(broom)
 
+model <- glm(job ~ education_level, data = refugee, family = binomial)
+model_summary <- tidy(model)
+kable(model_summary, caption = "Logistic Regression Summary: Job vs. Education Level")
 
-refugee <- refugee |>
-  mutate(
-    employment_status = ifelse(job == "Yes", 1, 0),
-    education_level = factor(
-      education_level,
-      levels = c("No Formal Education", "Elementary", "Secondary", "Postsecondary"))
-
-model <- glm(
-  job ~ education_years3,
-  data = refugee,
-  family = binomial(link = "logit"))
-model
 
 exp_coef <- exp(coef(model))
-exp_coef
+exp_coef_df <- tidy(model)
+exp_coef_df$exp_coef <- exp_coef
+kable(exp_coef_df, col.names = c("Term", "Estimate", "Std. Error", "z value", "Pr(>|z|)", "Odds Ratio"))
 
 ```
-
 
 ```{r}
 library(ggplot2)
@@ -121,8 +132,8 @@ refugee_map <- refugee |>
       education_years3 <= 12 ~ "Secondary",
       education_years3 > 12 ~ "Postsecondary"
     ),
-    employment_status = ifelse(job == "Yes", "Employed", "Unemployed")
-  )
+    employment_status = ifelse(job == "Yes", "Employed", "Unemployed"))
+
 location <- refugee_map |>
   group_by(surveylocation, education_level) |>
   summarise(employed = sum(employment_status == "Employed"),
@@ -145,7 +156,7 @@ location <- location |>
 countries <- ne_countries(scale = "medium", returnclass = "sf") |>
   filter(admin %in% c("Ethiopia", "Uganda", "Kenya"))
 
-# Merge country spatial data with refugee employment data
+# Merge country data with refugee employment data
 refugee_map <- countries |>
   left_join(location, by = c("admin" = "surveylocation"))
 ggplot(data = refugee_map) +
@@ -156,9 +167,13 @@ ggplot(data = refugee_map) +
     high = "orange",
     name = "Employment Rate") +
   labs(
-    title = "Refugee Employment Rates by Country",
+    title = "Refugee Employment Rates by Country (Uganda, Kenya, and Ethiopia)",
     caption = "Source: Refugee Economies Dataset (2016-2021)") +
   theme_minimal()
-
 ```
-woomp
+This map shows the employment rates of individuals based on their country (Uganda, Kenya, and Ethiopia). Kenya has the highest employment rate compared to Uganda and Ethiopia. This data suggests that geography could be a variable that could affect levels of education and employment. 
+
+## Conclusion
+
+In conclusion, the analysis suggests that higher levels of education are associated with increased employment rates among refugees. It supports the hypothesis that education plays a role in employment outcomes. Among the nations examined, Kenya has the highest percentage of employment for refugees; this could teach Ethiopia and Uganda how to better integrate refugees. However, the analysis is limited by missing data, particularly regarding unreported levels of education and employment statuses, and potential confounding variables, such as differences in host country policies, job opportunities, or refugee demographics(urban vs rural). Furthermore, bias could be introduced by using self-reported data alone. More thorough data collection, such as local economic situations, could enhance future research. More detailed, location-specific research to better understand regional variations within nations may also be made possible by increased resources.
+
