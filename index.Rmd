@@ -7,32 +7,101 @@ output:
     self_contained: false
 ---
 
-
+hi
 
 ## Project thoughts
 
-I am interested in exploring data related to refugees and immigrants.
+Introduction:
+Many people believe that education is essential to refugees' effective assimilation into host countries. However, systemic barriers and different levels of education among refugees often influence their access to employment opportunities. This report attempts to addresses the question: "What impact does refugee education have on their employment opportunities in host countries?"
 
-Research question?: What impact does refugee education have on their employment opportunities in host countries?
+The hypothesis is that refugees with higher education levels are more likely to find employment than those with lower education levels. Understanding this relationship is important for policymakers and organizations aiming to design effective education and employment programs. Evidence from this analysis could provide insights into how investments in refugee education contribute to economic integration and independence.
 
-Hypothesis: Refugees with higher levels of education are more likely to find employment in host nations than those with lower levels of education.
 
-Explanatory variables of interests: 
-Education levels would be divided into four categories: no formal education, elementary education, secondary education, and postsecondary education. This would assess the refugees' access to education prior to displacement.
+Data Section: 
+The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, educational, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
 
-Outcome variable of interests:
-Employment statuses would be divided into employed and unemployed. This could potentially be divided into various types of jobs. 
+The data for this report comes from the Refugee Economies Dataset, collected between 2016 and 2021 across Uganda, Kenya, and Ethiopia. This dataset includes information on demographic, educational, and employment characteristics of nearly 9,000 refugees. Because it looks at data from a specific time period across several people, the research design is cross-sectional.
 
-Support/Against Hypothesis:
-If higher education levels are associated with a higher probability of employment, this would support my hypothesis. For example, college education is more likely to lead to employment than primary education. The same might be argued if there is no association between education and employment position, which contradicts my hypothesis. 
+Employment status (either employed or unemployed) is the dependent variable.
+Whether refugees are now working for a living is captured by this variable.
+The independent variable is the degree of education (classified as elementary, secondary, post-secondary, or no formal education).This variable is determined from the reported years of education.
 
 ```{r}
 library(dplyr)
 library(tidyr)
+library(ggplot2)
+set.seed(02138)
 
 getwd()
 setwd("/Users/madalynn/ps270-final-project")
-refugee <- read.csv("data_3countries_refugees_public.csv")
+
+refugee <- read.csv("data/data_3countries_refugees_public.csv")
+refugee
+
+refugee <- refugee |>
+  select(education_years3, job) |>
+  drop_na() |>
+  mutate(
+    education_level = case_when(
+      education_years3 <= 0 ~ "No Formal Education",
+      education_years3 <= 6 ~ "Elementary",
+      education_years3 <= 12 ~ "Secondary",
+      education_years3 > 12 ~ "Postsecondary"),
+    employment_status = case_when(
+      job == "Yes" ~ "Employed",
+      job == "No" ~ "Unemployed",
+      TRUE ~ NA_character_))
+
+refugee$job <- ifelse(refugee$job == "Yes", 1, 0)
+
+ggplot(refugee, aes(x = education_level, fill = employment_status)) +
+  geom_bar(position = "dodge", color = "black") + scale_fill_manual("Legend", values = c("Employed" = "pink", "Unemployed" = "yellow")) +
+  labs(
+    title = "Relationship Between Education Level and Employment Status",
+    subtitle = "Refugee Economies Dataset (2016-2021)",
+    x = "Education Level",
+    y = "Number of Refugees",
+    fill = "Employment Status"
+  ) +
+  geom_text(stat = "count", aes(label = after_stat(count)), 
+            position = position_dodge(width = 0.9), 
+            vjust = -0.5, size = 3) +
+  theme_minimal(base_size = 14) +
+  theme(
+    plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+    plot.subtitle = element_text(hjust = 0.5, size = 12),
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  )
+
+```
+
+```{r}
+library(modelsummary)
+library(dplyr)
+
+
+refugee <- refugee |>
+  mutate(
+    employment_status = ifelse(job == "Yes", 1, 0),
+    education_level = factor(
+      education_level,
+      levels = c("No Formal Education", "Elementary", "Secondary", "Postsecondary")))
+
+model <- glm(
+  employment_status ~ education_level,
+  data = refugee,
+  family = binomial(link = "logit"))
+
+modelsummary::modelsummary(
+  refugee,
+  statistic = c("s.e. = {std.error}", "p = {p.value}"),
+  gof_map = c("nobs")
+)
+
+```
+
+
+```{r}
 
 
 
